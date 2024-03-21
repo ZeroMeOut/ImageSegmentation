@@ -1,4 +1,3 @@
-import asyncio
 from utils import pipeline, load_model
 from fastapi import FastAPI, UploadFile, File
 
