@@ -53,6 +53,9 @@ def pipeline(contents, model):
 
         # Process the image
         processed_image = process(model, image)
+        if isinstance(processed_image, JSONResponse):
+            return processed_image  # Return error response if process failed
+        
         img_byte_array = BytesIO()
         processed_image.save(img_byte_array, format='JPEG')
         img_byte_array.seek(0)
