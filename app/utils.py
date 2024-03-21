@@ -3,7 +3,8 @@ import numpy as np
 import torchvision.transforms as transforms
 from PIL import Image
 from io import BytesIO
-import json 
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse, StreamingResponse
 
 ## Has to be a better way to return the errors
 ## It was just used for testing btw
@@ -41,17 +42,17 @@ def process(model, image):
     return processed_image
 
 def pipeline(contents, model):
-    try: 
-        # Load image
-        image = get_image(contents)
 
-        # Process the image
-        processed_image = process(model, image)
+    # Load image
+    image = get_image(contents)
 
-        return type(processed_image)
-    
-    except Exception as e:
-        return f"Error processing image from pipleline: {e}"
+    # Process the image
+    processed_image = process(model, image)
+    img_byte_array = BytesIO()
+    processed_image.save(img_byte_array, format='JPEG')
+    img_byte_array.seek(0)
+
+    return StreamingResponse(BytesIO(img_byte_array.read()), media_type="image/jpeg")
 
 
     
